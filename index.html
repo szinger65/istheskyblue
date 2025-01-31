@@ -14,9 +14,6 @@
             margin: 0;
             font-family: Arial, sans-serif;
             text-align: center;
-            background: linear-gradient(to bottom, #87CEEB, #B0E0E6);
-            overflow: hidden;
-            position: relative;
         }
         .question {
             font-size: 2rem;
@@ -27,63 +24,10 @@
         .answer {
             font-size: 8rem;
             font-weight: bold;
-            position: relative;
-            z-index: 2;
-        }
-        /* Sun */
-        .sun {
-            width: 100px;
-            height: 100px;
-            background: yellow;
-            border-radius: 50%;
-            position: absolute;
-            top: 50px;
-            right: 50px;
-            box-shadow: 0 0 50px rgba(255, 255, 0, 0.8);
-        }
-        /* Clouds */
-        .cloud {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.9;
-            filter: blur(5px);
-        }
-        .cloud1, .cloud2, .cloud3 {
-            width: 150px;
-            height: 70px;
-            top: 100px;
-            box-shadow: 40px 10px 30px rgba(255, 255, 255, 0.7);
-            animation: moveClouds 20s linear infinite;
-        }
-        .cloud2 {
-            width: 180px;
-            height: 80px;
-            top: 200px;
-            animation-duration: 25s;
-        }
-        .cloud3 {
-            width: 120px;
-            height: 60px;
-            top: 300px;
-            animation-duration: 30s;
-        }
-
-        @keyframes moveClouds {
-            from {
-                left: -200px;
-            }
-            to {
-                left: 100vw;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="sun"></div>
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div class="cloud cloud3"></div>
     <div class="question">Is the sky blue?</div>
     <div class="answer">Yes</div>
 </body>
