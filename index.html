@@ -30,11 +30,25 @@
       bottom: 20px;
       font-size: 1.2rem;
     }
+    .game-button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .game-button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <div class="question">Is the sky blue?</div>
   <div class="answer">Yes</div>
-  <div class="link"><a href="game.html">Go to Game</a></div>
+  <div class="link"><a href="game.html" class="game-button">Go to Game</a></div>
 </body>
 </html>
