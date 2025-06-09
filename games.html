@@ -1,25 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Click the Button</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click the Button Game</title>
   <style>
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      font-family: Arial;
+      margin: 0;
+      font-family: Arial, sans-serif;
       background-color: #f0f8ff;
     }
-    button {
+
+    h1 {
       font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .score {
+      font-size: 3rem;
+      margin: 20px 0;
+    }
+
+    button {
       padding: 1rem 2rem;
+      font-size: 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .back {
+      margin-top: 30px;
+      font-size: 1rem;
+    }
+
+    .back a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .back a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <button onclick="alert('You clicked the game!')">Play</button>
+  <h1>Click the Button Game</h1>
+  <div class="score" id="score">Score: 0</div>
+  <button onclick="increaseScore()">Click me!</button>
+  <div class="back"><a href="index.html">Back to Main Page</a></div>
+
+  <script>
+    let score = 0;
+    function increaseScore() {
+      score++;
+      document.getElementById("score").innerText = "Score: " + score;
+    }
+  </script>
 </body>
 </html>
+
 
