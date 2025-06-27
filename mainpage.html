@@ -1,58 +1,42 @@
 <!DOCTYPE html>
-<!-- This declares the document type and version of HTML -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- Sets the character encoding to UTF-8, which supports most characters -->
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Makes the page responsive on all devices by setting the viewport width to the device width -->
-
   <style>
-    /* Styles for the entire body of the page */
     body {
-      display: flex;                      /* Uses Flexbox layout */
-      flex-direction: column;            /* Arranges items in a column */
-      justify-content: center;           /* Vertically centers content */
-      align-items: center;               /* Horizontally centers content */
-      height: 100vh;                     /* Makes the body take up the full viewport height */
-      margin: 0;                         /* Removes default margin */
-      font-family: Arial, sans-serif;    /* Sets the font */
-      text-align: center;                /* Centers text horizontally */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
     }
-
-    /* Styles for the container of the link/button */
     .link {
-      position: absolute;                /* Positions the element absolutely */
-      top: 20px;                         /* Moves it 20px from the top of the page */
-      left: 20px;                        /* Moves it 20px from the left of the page */
-      font-size: 1.2rem;                 /* Sets the font size */
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.2rem;
     }
-
-    /* Styles for the button that looks like a link */
     .game-button {
-      padding: 0.75rem 1.5rem;           /* Adds padding around the text */
-      font-size: 1.2rem;                 /* Sets font size */
-      background-color: #007BFF;         /* Sets button color (blue) */
-      color: white;                      /* Sets text color to white */
-      text-decoration: none;             /* Removes underline from the link */
-      border: none;                      /* Removes border */
-      border-radius: 8px;                /* Rounds the corners */
-      cursor: pointer;                   /* Changes cursor to pointer on hover */
-      transition: background-color 0.3s ease; /* Smooth color transition on hover */
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
-    /* Changes button color when hovered over */
     .game-button:hover {
-      background-color: #0056b3;         /* Darker blue on hover */
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <!-- The clickable link styled as a button -->
-  <div class="link">
-    <a href="clickthebutton.html" class="game-button">Button Clicker</a>
-    <!-- Navigates to clickthebutton.html when clicked -->
-  </div>
+  <div class="link"><a href="games.html" class="game-button">Button Clicker</a></div>
 </body>
 </html>
