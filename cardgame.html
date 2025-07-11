@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Card Game Setup</title>
+  <title>Flip Card Game</title>
   <style>
     body {
       background-color: #222;
@@ -65,13 +65,47 @@
     }
 
     .card {
+      width: 50px;
+      height: 70px;
+      perspective: 600px;
+      cursor: pointer;
+    }
+
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 6px;
+      border: 1px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .card-back {
+      background: navy;
+      color: white;
+    }
+
+    .card-front {
       background: white;
       color: black;
-      border: 1px solid #000;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 1.1rem;
-      font-weight: bold;
+      transform: rotateY(180deg);
     }
   </style>
 </head>
@@ -80,9 +114,8 @@
   <!-- START SCREEN -->
   <div id="start-screen" class="screen active">
     <h1>🃏 Welcome to the Card Game</h1>
-    <label for="player-count">Choose number of players (3 to 7):</label>
+    <label for="player-count">Choose number of players (4 to 7):</label>
     <select id="player-count">
-      <option value="3">3 Players</option>
       <option value="4">4 Players</option>
       <option value="5">5 Players</option>
       <option value="6">6 Players</option>
@@ -151,7 +184,7 @@
     function dealCards() {
       const deck = shuffle(createDeck());
 
-      const cardsPerPlayer = 4;
+      const cardsPerPlayer = 5;
       const playerHands = {};
 
       // Clear existing cards
@@ -170,17 +203,37 @@
         });
       }
 
-      // Display cards
+      // Display face-down cards with hidden values
       for (let id of players) {
         const el = document.getElementById(id);
         playerHands[id].forEach(card => {
-          const cardEl = document.createElement('div');
-          cardEl.className = 'card';
-          cardEl.textContent = `${card.value}${card.suit}`;
+          const cardContainer = document.createElement('div');
+          cardContainer.className = 'card';
+
+          const inner = document.createElement('div');
+          inner.className = 'card-inner';
+
+          const front = document.createElement('div');
+          front.className = 'card-front';
+          front.textContent = `${card.value}${card.suit}`;
           if (card.suit === '♥' || card.suit === '♦') {
-            cardEl.style.color = 'red';
+            front.style.color = 'red';
           }
-          el.appendChild(cardEl);
+
+          const back = document.createElement('div');
+          back.className = 'card-back';
+          back.textContent = '🂠';
+
+          inner.appendChild(front);
+          inner.appendChild(back);
+          cardContainer.appendChild(inner);
+
+          // Flip on click
+          cardContainer.addEventListener('click', () => {
+            cardContainer.classList.toggle('flipped');
+          });
+
+          el.appendChild(cardContainer);
         });
       }
     }
