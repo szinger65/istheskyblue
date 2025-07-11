@@ -114,8 +114,9 @@
   <!-- START SCREEN -->
   <div id="start-screen" class="screen active">
     <h1>🃏 Welcome to the Card Game</h1>
-    <label for="player-count">Choose number of players (4 to 7):</label>
+    <label for="player-count">Choose number of players (3 to 7):</label>
     <select id="player-count">
+      <option value="3">3 Players</option>
       <option value="4">4 Players</option>
       <option value="5">5 Players</option>
       <option value="6">6 Players</option>
@@ -184,7 +185,7 @@
     function dealCards() {
       const deck = shuffle(createDeck());
 
-      const cardsPerPlayer = 5;
+      const cardsPerPlayer = 4;
       const playerHands = {};
 
       // Clear existing cards
