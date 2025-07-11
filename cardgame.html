@@ -67,11 +67,18 @@
       margin: 5px 0;
     }
 
+    .player {
+      position: absolute;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
     .card {
       width: 50px;
       height: 70px;
       perspective: 600px;
-      margin: 0 5px;
+      margin: 0 3px;
       cursor: pointer;
     }
 
@@ -113,7 +120,7 @@
     }
 
     .card.flipped {
-      pointer-events: none; /* disable flipping back */
+      pointer-events: none;
     }
   </style>
 </head>
@@ -139,14 +146,14 @@
     <div id="table" class="table">
       <div id="pyramid" class="pyramid"></div>
     </div>
-    <button onclick="dealCards()">Deal Cards</button>
   </div>
 
   <script>
     const suits = ['♠', '♥', '♦', '♣'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
     let deck = [];
-    let flipIndex = 0; // Which card is allowed to flip next
+    let flipIndex = 0;
+    let players = [];
 
     function createDeck() {
       const newDeck = [];
@@ -169,10 +176,14 @@
     function startGame() {
       const count = parseInt(document.getElementById('player-count').value);
       players = [];
+      deck = shuffle(createDeck());
+      flipIndex = 0;
 
-      // Generate player spots dynamically
       const table = document.getElementById('table');
-      table.innerHTML = '';
+      table.innerHTML = '<div id="pyramid" class="pyramid"></div>';
+      const pyramid = document.getElementById('pyramid');
+
+      // Create player positions around circle
       const angleStep = 360 / count;
       for (let i = 0; i < count; i++) {
         const div = document.createElement('div');
@@ -187,91 +198,84 @@
         table.appendChild(div);
         players.push(div.id);
       }
+
+      dealToPlayers();
+      buildPyramid();
+
       document.getElementById('start-screen').classList.remove('active');
       document.getElementById('game-screen').classList.add('active');
     }
 
-    function dealCardsplayer() {
-      const deck = shuffle(createDeck());
-
-      const cardsPerPlayer = 5;
+    function dealToPlayers() {
+      const cardsPerPlayer = 4;
       const playerHands = {};
 
-      // Clear existing cards
       players.forEach(id => {
         const el = document.getElementById(id);
         el.innerHTML = '';
         playerHands[id] = [];
+
+        for (let i = 0; i < cardsPerPlayer; i++) {
+          const card = deck.pop();
+          const cardEl = createPlayerCard(card);
+          el.appendChild(cardEl);
+        }
       });
-
-      // Deal cards
-      for (let i = 0; i < cardsPerPlayer; i++) {
-        players.forEach(id => {
-          if (deck.length > 0) {
-            playerHands[id].push(deck.pop());
-          }
-        });
-      }
-
-    for (let id of players) {
-        const el = document.getElementById(id);
-        playerHands[id].forEach(card => {
-          const cardContainer = document.createElement('div');
-          cardContainer.className = 'card';
-
-          const inner = document.createElement('div');
-          inner.className = 'card-inner';
-
-          const front = document.createElement('div');
-          front.className = 'card-front';
-          front.textContent = `${card.value}${card.suit}`;
-          if (card.suit === '♥' || card.suit === '♦') {
-            front.style.color = 'red';
-          }
-
-          const back = document.createElement('div');
-          back.className = 'card-back';
-          back.textContent = '🂠';
-
-          inner.appendChild(front);
-          inner.appendChild(back);
-          cardContainer.appendChild(inner);
-
-          // Flip on click
-          cardContainer.addEventListener('click', () => {
-            cardContainer.classList.toggle('flipped');
-          });
-
-          el.appendChild(cardContainer);
-        });
-      }
     }
 
-      
-    function dealCards() {
-      flipIndex = 0;
-      deck = shuffle(createDeck());
+    function createPlayerCard(card) {
+      const cardContainer = document.createElement('div');
+      cardContainer.className = 'card';
+
+      const inner = document.createElement('div');
+      inner.className = 'card-inner';
+
+      const front = document.createElement('div');
+      front.className = 'card-front';
+      front.textContent = `${card.value}${card.suit}`;
+      if (card.suit === '♥' || card.suit === '♦') {
+        front.style.color = 'red';
+      }
+
+      const back = document.createElement('div');
+      back.className = 'card-back';
+      back.textContent = '🂠';
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      cardContainer.appendChild(inner);
+
+      // Flip freely for player cards
+      cardContainer.addEventListener('click', () => {
+        if (!cardContainer.classList.contains('flipped')) {
+          cardContainer.classList.add('flipped');
+        }
+      });
+
+      return cardContainer;
+    }
+
+    function buildPyramid() {
       const pyramid = document.getElementById('pyramid');
       pyramid.innerHTML = '';
-
-      let cardCount = 0;
+      let count = 0;
 
       for (let row = 1; row <= 6; row++) {
         const rowEl = document.createElement('div');
         rowEl.className = 'row';
 
-        for (let col = 0; col < row; col++) {
+        for (let i = 0; i < row; i++) {
           const cardData = deck.pop();
-          const card = createFlipCard(cardData, cardCount);
+          const card = createPyramidCard(cardData, count);
           rowEl.appendChild(card);
-          cardCount++;
+          count++;
         }
 
         pyramid.appendChild(rowEl);
       }
     }
 
-    function createFlipCard(cardData, index) {
+    function createPyramidCard(cardData, index) {
       const cardContainer = document.createElement('div');
       cardContainer.className = 'card';
       cardContainer.dataset.index = index;
@@ -294,10 +298,10 @@
       inner.appendChild(back);
       cardContainer.appendChild(inner);
 
-      // Flip only if it's the next allowed card
+      // Flip only in order
       cardContainer.addEventListener('click', () => {
-        const cardNumber = parseInt(cardContainer.dataset.index);
-        if (cardNumber === flipIndex) {
+        const thisIndex = parseInt(cardContainer.dataset.index);
+        if (thisIndex === flipIndex) {
           cardContainer.classList.add('flipped');
           flipIndex++;
         }
