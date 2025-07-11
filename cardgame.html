@@ -3,30 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Card Game Table</title>
+  <title>Card Game Setup</title>
   <style>
     body {
       background-color: #222;
       font-family: Arial, sans-serif;
       color: white;
+      margin: 0;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 0;
-      padding: 20px;
     }
 
     h1 {
       margin-bottom: 20px;
     }
 
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .active {
+      display: flex;
+    }
+
+    select, button {
+      font-size: 1rem;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button {
+      background-color: #f1c40f;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #d4ac0d;
+    }
+
     .table {
       position: relative;
-      width: 600px;
-      height: 400px;
+      width: 700px;
+      height: 500px;
       background-color: #007B33;
       border-radius: 50%;
-      margin-bottom: 20px;
+      margin: 30px 0;
     }
 
     .player {
@@ -34,7 +62,6 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      font-size: 1rem;
     }
 
     .card {
@@ -46,65 +73,34 @@
       font-size: 1.1rem;
       font-weight: bold;
     }
-
-    /* Position each player */
-    #player-top {
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    #player-bottom {
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    #player-left {
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      flex-direction: column;
-    }
-
-    #player-right {
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      flex-direction: column;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      background-color: #f1c40f;
-      color: #000;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #d4ac0d;
-    }
   </style>
 </head>
 <body>
-  <h1>🃏 Card Dealing Game</h1>
-  <div class="table">
-    <div id="player-top" class="player">Top</div>
-    <div id="player-left" class="player">Left</div>
-    <div id="player-right" class="player">Right</div>
-    <div id="player-bottom" class="player">You</div>
+
+  <!-- START SCREEN -->
+  <div id="start-screen" class="screen active">
+    <h1>🃏 Welcome to the Card Game</h1>
+    <label for="player-count">Choose number of players (4 to 7):</label>
+    <select id="player-count">
+      <option value="4">4 Players</option>
+      <option value="5">5 Players</option>
+      <option value="6">6 Players</option>
+      <option value="7">7 Players</option>
+    </select>
+    <button onclick="startGame()">Start Game</button>
   </div>
 
-  <button onclick="dealCards()">Deal Cards</button>
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="screen">
+    <h1>Card Game Table</h1>
+    <div id="table" class="table"></div>
+    <button onclick="dealCards()">Deal Cards</button>
+  </div>
 
   <script>
     const suits = ['♠', '♥', '♦', '♣'];
     const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    let players = [];
 
     function createDeck() {
       const deck = [];
@@ -124,36 +120,66 @@
       return deck;
     }
 
+    function startGame() {
+      const count = parseInt(document.getElementById('player-count').value);
+      players = [];
+
+      // Generate player spots dynamically
+      const table = document.getElementById('table');
+      table.innerHTML = '';
+      const angleStep = 360 / count;
+      for (let i = 0; i < count; i++) {
+        const div = document.createElement('div');
+        div.className = 'player';
+        div.id = `player-${i + 1}`;
+        const angle = angleStep * i;
+        const radius = 200;
+        const x = 300 + radius * Math.cos(angle * Math.PI / 180);
+        const y = 200 + radius * Math.sin(angle * Math.PI / 180);
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
+        table.appendChild(div);
+        players.push(div.id);
+      }
+
+      // Switch screens
+      document.getElementById('start-screen').classList.remove('active');
+      document.getElementById('game-screen').classList.add('active');
+    }
+
     function dealCards() {
       const deck = shuffle(createDeck());
 
-      const players = {
-        top: [],
-        left: [],
-        right: [],
-        bottom: []
-      };
+      const cardsPerPlayer = 5;
+      const playerHands = {};
 
-      // Deal 5 cards to each player
-      for (let i = 0; i < 4; i++) {
-        players.top.push(deck.pop());
-        players.left.push(deck.pop());
-        players.right.push(deck.pop());
-        players.bottom.push(deck.pop());
+      // Clear existing cards
+      players.forEach(id => {
+        const el = document.getElementById(id);
+        el.innerHTML = '';
+        playerHands[id] = [];
+      });
+
+      // Deal cards
+      for (let i = 0; i < cardsPerPlayer; i++) {
+        players.forEach(id => {
+          if (deck.length > 0) {
+            playerHands[id].push(deck.pop());
+          }
+        });
       }
 
       // Display cards
-      for (let position in players) {
-        const container = document.getElementById(`player-${position}`);
-        container.innerHTML = ''; // Clear previous cards
-        players[position].forEach(card => {
+      for (let id of players) {
+        const el = document.getElementById(id);
+        playerHands[id].forEach(card => {
           const cardEl = document.createElement('div');
           cardEl.className = 'card';
           cardEl.textContent = `${card.value}${card.suit}`;
           if (card.suit === '♥' || card.suit === '♦') {
             cardEl.style.color = 'red';
           }
-          container.appendChild(cardEl);
+          el.appendChild(cardEl);
         });
       }
     }
