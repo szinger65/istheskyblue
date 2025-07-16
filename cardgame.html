@@ -68,6 +68,14 @@
       gap: 5px;
       flex-wrap: wrap;
       cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px dashed white;
+      width: 120px;
+      height: 100px;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 0.8rem;
     }
 
     .card {
@@ -180,6 +188,7 @@
         const player = document.createElement('div');
         player.className = 'player';
         player.id = `player-${i}`;
+        player.textContent = `Player ${i + 1}`;
         const angle = angleStep * i;
         const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
         const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
@@ -203,7 +212,6 @@
       const cardEl = createPlayerCard(card);
       player.appendChild(cardEl);
       
-      // After all players have 4 cards, build pyramid
       if (players.every(id => playerHands[id].length === 4)) {
         buildPyramid();
       }
