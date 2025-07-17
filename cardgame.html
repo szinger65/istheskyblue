@@ -2,54 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pyramid Card Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Card Game</title>
   <style>
     body {
-      background-color: #1a1a1a;
-      font-family: Arial, sans-serif;
-      color: white;
       margin: 0;
-      padding: 20px;
+      height: 100vh;
+      background-color: #0b3d91;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
     }
 
-    .screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .active {
-      display: flex;
-    }
-
-    select, button {
-      font-size: 1rem;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-
-    button {
-      background-color: #f1c40f;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .table {
+    #table {
       position: relative;
-      width: 500px;
-      height: 500px;
-      background-color: #14532d;
+      width: 800px;
+      height: 600px;
+      background-color: #2e8b57;
       border-radius: 50%;
-      margin: 30px 0;
+      border: 5px solid #fff;
     }
 
-    .pyramid {
+    .player {
+      position: absolute;
+      width: 80px;
+      height: 120px;
+      text-align: center;
+    }
+
+    .card {
+      width: 50px;
+      height: 70px;
+      background-color: #333;
+      border-radius: 8px;
+      perspective: 1000px;
+      margin: 2px;
+      display: inline-block;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+    }
+
+    .card-back {
+      background: #444;
+    }
+
+    .card-front {
+      background: white;
+      color: black;
+      transform: rotateY(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pyramid {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -59,240 +85,128 @@
     .row {
       display: flex;
       justify-content: center;
-      margin: 4px 0;
+      margin: 5px 0;
     }
 
-    .player {
-      position: absolute;
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
+    #dealBtn {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
       cursor: pointer;
-      background-color: rgba(255, 255, 255, 0.1);
-      border: 1px dashed white;
-      width: 120px;
-      height: 100px;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 0.8rem;
-    }
-
-    .card {
-      width: 30px;
-      height: 50px;
-      perspective: 600px;
-    }
-
-    .card-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s;
-    }
-
-    .card.flipped .card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .card-front, .card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 6px;
-      border: 1px solid #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    .card-back {
-      background: navy;
-      color: white;
-    }
-
-    .card-front {
-      background: white;
-      color: black;
-      transform: rotateY(180deg);
     }
   </style>
 </head>
 <body>
-  <div id="start-screen" class="screen active">
-    <h1>🃏 Pyramid Card Game</h1>
-    <label for="player-count">Choose number of players (3 to 7):</label>
-    <select id="player-count">
-      <option value="3">3 Players</option>
-      <option value="4">4 Players</option>
-      <option value="5">5 Players</option>
-      <option value="6">6 Players</option>
-      <option value="7">7 Players</option>
-    </select>
-    <button onclick="startGame()">Start Game</button>
-  </div>
-
-  <div id="game-screen" class="screen">
-    <h1>Pyramid Table</h1>
-    <div id="table" class="table">
-      <div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div>
-      <div id="pyramid" class="pyramid"></div>
-    </div>
+  <button id="dealBtn">Start Dealing</button>
+  <div id="table">
+    <div id="pyramid"></div>
   </div>
 
   <script>
-    const suits = ['♠', '♥', '♦', '♣'];
-    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    let deck = [];
-    let players = [];
-    let flipIndex = 0;
-    const playerHands = {};
+    const table = document.getElementById('table');
+    const pyramid = document.getElementById('pyramid');
+    const dealBtn = document.getElementById('dealBtn');
+    const maxCardsPerPlayer = 4;
+    const totalPlayers = 7;
+    const playerData = [];
+    let pyramidCreated = false;
 
-    function createDeck() {
-      const newDeck = [];
-      for (let suit of suits) {
-        for (let value of values) {
-          newDeck.push({ suit, value });
+    const positions = [
+      [400, 20],    // top
+      [620, 100],   // top right
+      [670, 300],   // right
+      [620, 500],   // bottom right
+      [180, 500],   // bottom left
+      [130, 300],   // left
+      [180, 100]    // top left
+    ];
+
+    function createCard(value = '?') {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const inner = document.createElement('div');
+      inner.className = 'card-inner';
+
+      const front = document.createElement('div');
+      front.className = 'card-front';
+      front.textContent = value;
+
+      const back = document.createElement('div');
+      back.className = 'card-back';
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      card.appendChild(inner);
+
+      card.addEventListener('click', () => {
+        if (!card.classList.contains('locked')) {
+          card.classList.toggle('flipped');
         }
-      }
-      return newDeck;
+      });
+
+      return card;
     }
 
-    function shuffle(deck) {
-      for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-      }
-      return deck;
-    }
-
-    function startGame() {
-      const count = parseInt(document.getElementById('player-count').value);
-      players = [];
-      deck = shuffle(createDeck());
-      flipIndex = 0;
-
-      const table = document.getElementById('table');
-      table.innerHTML = '<div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div><div id="pyramid" class="pyramid"></div>';
-
-      const radius = 300;
-      const centerX = 350;
-      const centerY = 350;
-      const angleStep = 360 / count;
-
-      for (let i = 0; i < count; i++) {
+    function createPlayers() {
+      for (let i = 0; i < totalPlayers; i++) {
         const player = document.createElement('div');
         player.className = 'player';
-        player.id = `player-${i}`;
-        player.textContent = `Player ${i + 1}`;
-        const angle = angleStep * i;
-        const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
-        const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
-        player.style.left = `${x}px`;
-        player.style.top = `${y}px`;
-        playerHands[player.id] = [];
-        player.addEventListener('click', () => dealToPlayer(player.id));
+        player.style.left = `${positions[i][0]}px`;
+        player.style.top = `${positions[i][1]}px`;
+        player.dataset.cards = 0;
         table.appendChild(player);
-        players.push(player.id);
-      }
+        playerData.push(player);
 
-      document.getElementById('start-screen').classList.remove('active');
-      document.getElementById('game-screen').classList.add('active');
-    }
+        player.addEventListener('click', () => {
+          const cardCount = parseInt(player.dataset.cards);
+          if (cardCount < maxCardsPerPlayer) {
+            const newCard = createCard();
+            player.appendChild(newCard);
+            player.dataset.cards = cardCount + 1;
 
-    function dealToPlayer(playerId) {
-      if (playerHands[playerId].length >= 4 || deck.length === 0) return;
-      const card = deck.pop();
-      playerHands[playerId].push(card);
-      const player = document.getElementById(playerId);
-      const cardEl = createPlayerCard(card);
-      player.appendChild(cardEl);
-      
-      if (players.every(id => playerHands[id].length === 4)) {
-        buildPyramid();
+            checkAllPlayersDealt();
+          }
+        });
       }
     }
 
-    function createPlayerCard(card) {
-      const cardContainer = document.createElement('div');
-      cardContainer.className = 'card';
-
-      const inner = document.createElement('div');
-      inner.className = 'card-inner';
-
-      const front = document.createElement('div');
-      front.className = 'card-front';
-      front.textContent = `${card.value}${card.suit}`;
-      if (card.suit === '♥' || card.suit === '♦') front.style.color = 'red';
-
-      const back = document.createElement('div');
-      back.className = 'card-back';
-      back.textContent = '🂠';
-
-      inner.appendChild(front);
-      inner.appendChild(back);
-      cardContainer.appendChild(inner);
-
-      cardContainer.addEventListener('click', () => {
-        cardContainer.classList.toggle('flipped');
-      });
-
-      return cardContainer;
+    function checkAllPlayersDealt() {
+      const active = playerData.filter(p => parseInt(p.dataset.cards) === maxCardsPerPlayer);
+      if (active.length >= 3 && !pyramidCreated) {
+        createPyramid();
+        pyramidCreated = true;
+      }
     }
 
-    function buildPyramid() {
-      const pyramid = document.getElementById('pyramid');
-      pyramid.innerHTML = '';
-      let count = 0;
-
+    function createPyramid() {
+      let count = 1;
       for (let row = 1; row <= 6; row++) {
-        const rowEl = document.createElement('div');
-        rowEl.className = 'row';
-        for (let i = 0; i < row; i++) {
-          const cardData = deck.pop();
-          const card = createPyramidCard(cardData, count);
-          rowEl.appendChild(card);
-          count++;
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        for (let col = 0; col < row; col++) {
+          const card = createCard(count++);
+          card.classList.add('locked');
+
+          card.addEventListener('click', function () {
+            const allPrevious = [...rowDiv.parentNode.querySelectorAll('.card')]
+              .slice(0, count - 2);
+            const allFlipped = allPrevious.every(c => c.classList.contains('flipped'));
+
+            if (!card.classList.contains('flipped') && allFlipped) {
+              card.classList.add('flipped');
+            }
+          });
+
+          rowDiv.appendChild(card);
         }
-        pyramid.appendChild(rowEl);
+        pyramid.appendChild(rowDiv);
       }
     }
 
-    function createPyramidCard(cardData, index) {
-      const cardContainer = document.createElement('div');
-      cardContainer.className = 'card';
-      cardContainer.dataset.index = index;
-
-      const inner = document.createElement('div');
-      inner.className = 'card-inner';
-
-      const front = document.createElement('div');
-      front.className = 'card-front';
-      front.textContent = `${cardData.value}${cardData.suit}`;
-      if (cardData.suit === '♥' || cardData.suit === '♦') front.style.color = 'red';
-
-      const back = document.createElement('div');
-      back.className = 'card-back';
-      back.textContent = '🂠';
-
-      inner.appendChild(front);
-      inner.appendChild(back);
-      cardContainer.appendChild(inner);
-
-      cardContainer.addEventListener('click', () => {
-        const thisIndex = parseInt(cardContainer.dataset.index);
-        if (thisIndex === flipIndex) {
-          cardContainer.classList.add('flipped');
-          flipIndex++;
-        }
-      });
-
-      return cardContainer;
-    }
+    dealBtn.addEventListener('click', () => {
+      dealBtn.style.display = 'none';
+      createPlayers();
+    });
   </script>
 </body>
 </html>
