@@ -48,6 +48,27 @@
       border-radius: 50%;
       background: #228B22;
     }
+    .player {
+      position: absolute;
+      width: 100px;
+      height: 140px;
+      background: #333;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed white;
+      border-radius: 10px;
+    }
+    
+    /* Position each player around the circle manually */
+    #player-0 { top: 0; left: 250px; }
+    #player-1 { top: 100px; right: 0; }
+    #player-2 { bottom: 100px; right: 0; }
+    #player-3 { bottom: 0; left: 250px; }
+    #player-4 { bottom: 100px; left: 0; }
+    #player-5 { top: 100px; left: 0; }
+    #player-6 { top: 20px; left: 20px; } /* Can fine-tune this one */
 
     .pyramid {
       position: absolute;
