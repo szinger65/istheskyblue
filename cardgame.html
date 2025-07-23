@@ -132,16 +132,6 @@
       color: black;
       transform: rotateY(180deg);
     }
-
-    #game-title {
-      font-family: 'Georgia', serif;  /* Change font */
-      font-size: 36px;                /* Adjust size */
-      color: white;                   /* Text color */
-      position: absolute;            /* Allow positioning */
-      top: 20px;                     /* Distance from top of page */
-      left: 50%;                     /* Center horizontally */
-      transform: translateX(-50%);   /* Adjust true center */
-}
   </style>
 </head>
 <body>
@@ -159,7 +149,7 @@
   </div>
 
   <div id="game-screen" class="screen">
-    <h1 id="game-title">Pyramid Table</h1>
+    <h1>Pyramid Table</h1>
     <div id="table" class="table">
       <div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div>
       <div id="pyramid" class="pyramid"></div>
