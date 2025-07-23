@@ -204,40 +204,36 @@
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
-        const playerWrapper = document.createElement('div');
-        playerWrapper.style.position = 'absolute';
-        playerWrapper.style.left = `${x}px`;
-        playerWrapper.style.top = `${y}px`;
-        playerWrapper.style.transform = 'translate(-50%, -50%)';
-        playerWrapper.style.display = 'flex';
-        playerWrapper.style.flexDirection = 'column';
-        playerWrapper.style.alignItems = 'center';
+          const angle = angleStep * i;
+          const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
+          const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
         
-        const nameLabel = document.createElement('div');
-        nameLabel.className = 'player-label';
-        nameLabel.textContent = `Player ${i + 1}`;
+          const playerWrapper = document.createElement('div');
+          playerWrapper.style.position = 'absolute';
+          playerWrapper.style.left = `${x}px`;
+          playerWrapper.style.top = `${y}px`;
+          playerWrapper.style.transform = 'translate(-50%, -50%)';
+          playerWrapper.style.display = 'flex';
+          playerWrapper.style.flexDirection = 'column';
+          playerWrapper.style.alignItems = 'center';
         
-        const player = document.createElement('div');
-        player.className = 'player';
-        player.id = `player-${i}`;
-        playerHands[player.id] = [];
-        player.addEventListener('click', () => dealToPlayer(player.id));
+          const nameLabel = document.createElement('div');
+          nameLabel.className = 'player-label';
+          nameLabel.textContent = `Player ${i + 1}`;
         
-        playerWrapper.appendChild(nameLabel);
-        playerWrapper.appendChild(player);
-        table.appendChild(playerWrapper);
-        players.push(player.id);
+          const player = document.createElement('div');
+          player.className = 'player';
+          player.id = `player-${i}`;
+          playerHands[player.id] = [];
+        
+          player.addEventListener('click', () => dealToPlayer(player.id));
+        
+          playerWrapper.appendChild(nameLabel);
+          playerWrapper.appendChild(player);
+          table.appendChild(playerWrapper);
+          players.push(player.id);
+        }
 
-        const angle = angleStep * i;
-        const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
-        const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
-        player.style.left = `${x}px`;
-        player.style.top = `${y}px`;
-        playerHands[player.id] = [];
-        player.addEventListener('click', () => dealToPlayer(player.id));
-        table.appendChild(player);
-        players.push(player.id);
-      }
 
       document.getElementById('start-screen').classList.remove('active');
       document.getElementById('game-screen').classList.add('active');
