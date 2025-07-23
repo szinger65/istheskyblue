@@ -197,10 +197,30 @@
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
+        const playerWrapper = document.createElement('div');
+        playerWrapper.style.position = 'absolute';
+        playerWrapper.style.left = `${x}px`;
+        playerWrapper.style.top = `${y}px`;
+        playerWrapper.style.transform = 'translate(-50%, -50%)';
+        playerWrapper.style.display = 'flex';
+        playerWrapper.style.flexDirection = 'column';
+        playerWrapper.style.alignItems = 'center';
+        
+        const nameLabel = document.createElement('div');
+        nameLabel.className = 'player-label';
+        nameLabel.textContent = `Player ${i + 1}`;
+        
         const player = document.createElement('div');
         player.className = 'player';
         player.id = `player-${i}`;
-        player.textContent = `Player ${i + 1}`;
+        playerHands[player.id] = [];
+        player.addEventListener('click', () => dealToPlayer(player.id));
+        
+        playerWrapper.appendChild(nameLabel);
+        playerWrapper.appendChild(player);
+        table.appendChild(playerWrapper);
+        players.push(player.id);
+
         const angle = angleStep * i;
         const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
         const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
