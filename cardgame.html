@@ -34,6 +34,27 @@
       border: none;
     }
 
+    input[type="text"] {
+      font-size: 1rem;
+      padding: 8px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 120px;
+    }
+
+    #player-names {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    #name-inputs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
     button {
       background-color: #f1c40f;
       font-weight: bold;
@@ -44,7 +65,7 @@
       position: relative;
       width: 400px;
       height: 400px;
-      margin: 125px auto 0;
+      margin: 100px auto 0;
       border-radius: 50%;
       background: #228B22;
     }
@@ -137,13 +158,19 @@
   <div id="start-screen" class="screen active">
     <h1>🃏 Pyramid Card Game</h1>
     <label for="player-count">Choose number of players (3 to 7):</label>
-    <select id="player-count">
+    <select id="player-count" onchange="updatePlayerNames()">
       <option value="3">3 Players</option>
       <option value="4">4 Players</option>
       <option value="5">5 Players</option>
       <option value="6">6 Players</option>
       <option value="7">7 Players</option>
     </select>
+    
+    <div id="player-names">
+      <h3>Player Names:</h3>
+      <div id="name-inputs"></div>
+    </div>
+    
     <button onclick="startGame()">Start Game</button>
   </div>
 
@@ -162,7 +189,27 @@
     let players = [];
     let flipIndex = 0;
     const playerHands = {};
+    let playerNames = [];
 
+    function updatePlayerNames() {
+      const count = parseInt(document.getElementById('player-count').value);
+      const nameInputs = document.getElementById('name-inputs');
+      nameInputs.innerHTML = '';
+      
+      for (let i = 0; i < count; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = `Player ${i + 1}`;
+        input.value = `Player ${i + 1}`;
+        input.id = `player-name-${i}`;
+        nameInputs.appendChild(input);
+      }
+    }
+
+    // Initialize with default 3 players
+    window.onload = function() {
+      updatePlayerNames();
+    };
     function createDeck() {
       const newDeck = [];
       for (let suit of suits) {
@@ -183,6 +230,14 @@
 
     function startGame() {
       const count = parseInt(document.getElementById('player-count').value);
+      
+      // Get custom player names
+      playerNames = [];
+      for (let i = 0; i < count; i++) {
+        const nameInput = document.getElementById(`player-name-${i}`);
+        playerNames.push(nameInput.value.trim() || `Player ${i + 1}`);
+      }
+      
       players = [];
       deck = shuffle(createDeck());
       flipIndex = 0;
@@ -191,8 +246,8 @@
       table.innerHTML = '<div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div><div id="pyramid" class="pyramid"></div>';
 
       const radius = 300;
-      const centerX = 200;
-      const centerY = 240;
+      const centerX = 140;
+      const centerY = 180;
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
@@ -210,7 +265,7 @@
           
           const nameLabel = document.createElement('div');
           nameLabel.className = 'player-label';
-          nameLabel.textContent = `Player ${i + 1}`;
+          nameLabel.textContent = playerNames[i];
           
           player.appendChild(nameLabel);
           player.addEventListener('click', () => dealToPlayer(player.id));
