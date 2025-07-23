@@ -48,18 +48,6 @@
       border-radius: 50%;
       background: #228B22;
     }
-    .player {
-      position: absolute;
-      width: 100px;
-      height: 140px;
-      background: #333;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px dashed white;
-      border-radius: 10px;
-    }
 
     .pyramid {
       position: absolute;
@@ -134,10 +122,14 @@
     }
 
     .player-label {
-      margin-bottom: 6px;
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
       font-size: 0.85rem;
       color: white;
       font-weight: bold;
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -199,8 +191,8 @@
       table.innerHTML = '<div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div><div id="pyramid" class="pyramid"></div>';
 
       const radius = 300;
-      const centerX = 140; /* 200 */
-      const centerY = 180; /* 350 */
+      const centerX = 140;
+      const centerY = 180;
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
@@ -208,33 +200,24 @@
           const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
           const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
         
-          const playerWrapper = document.createElement('div');
-              playerWrapper.style.position = 'absolute';
-              playerWrapper.style.left = `${x}px`;
-              playerWrapper.style.top = `${y}px`;
-              playerWrapper.style.transform = 'translate(-50%, -50%)';
-              playerWrapper.style.display = 'flex';
-              playerWrapper.style.flexDirection = 'column'; // stack vertically
-              playerWrapper.style.alignItems = 'center';
-              
-              const nameLabel = document.createElement('div');
-              nameLabel.className = 'player-label';
-              nameLabel.textContent = `Player ${i + 1}`;
-              nameLabel.style.marginBottom = '8px'; // space between label and box
-              
-              const player = document.createElement('div');
-              player.className = 'player';
-              player.id = `player-${i}`;
-              playerHands[player.id] = [];
-              
-              player.addEventListener('click', () => dealToPlayer(player.id));
-              
-              playerWrapper.appendChild(nameLabel);  // label on top
-              playerWrapper.appendChild(player);     // box below
-              table.appendChild(playerWrapper);
-              players.push(player.id);
+          const player = document.createElement('div');
+          player.className = 'player';
+          player.id = `player-${i}`;
+          player.style.left = `${x}px`;
+          player.style.top = `${y}px`;
+          player.style.transform = 'translate(-50%, -50%)';
+          playerHands[player.id] = [];
+          
+          const nameLabel = document.createElement('div');
+          nameLabel.className = 'player-label';
+          nameLabel.textContent = `Player ${i + 1}`;
+          
+          player.appendChild(nameLabel);
+          player.addEventListener('click', () => dealToPlayer(player.id));
+          
+          table.appendChild(player);
+          players.push(player.id);
         }
-
 
       document.getElementById('start-screen').classList.remove('active');
       document.getElementById('game-screen').classList.add('active');
