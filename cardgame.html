@@ -65,7 +65,7 @@
       position: relative;
       width: 400px;
       height: 400px;
-      margin: 150px auto 0;
+      margin: 100px auto 0;
       border-radius: 50%;
       background: #228B22;
     }
@@ -247,9 +247,9 @@
       table.innerHTML = '<div id="pyramid" class="pyramid"></div>';
 
       const radius = 300;
-      const centerX = 200;
-      const centerY = 200;
-      const angleStep = 360 / count
+      const centerX = 140;
+      const centerY = 180;
+      const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
           const angle = angleStep * i;
@@ -286,10 +286,6 @@
       const player = document.getElementById(playerId);
       const cardEl = createPlayerCard(card);
       player.appendChild(cardEl);
-      
-      if (players.every(id => playerHands[id].length === 4)) {
-        buildPyramid();
-      }
     }
 
     function createPlayerCard(card) {
@@ -324,14 +320,19 @@
       pyramid.innerHTML = '';
       let count = 0;
 
-      for (let row = 1; row <= 6; row++) {
+      // Always build 6 rows if less than 8 players
+      const rows = players.length < 8 ? 6 : Math.max(1, 8 - players.length);
+      
+      for (let row = 1; row <= rows; row++) {
         const rowEl = document.createElement('div');
         rowEl.className = 'row';
         for (let i = 0; i < row; i++) {
-          const cardData = deck.pop();
-          const card = createPyramidCard(cardData, count);
-          rowEl.appendChild(card);
-          count++;
+          if (deck.length > 0) {
+            const cardData = deck.pop();
+            const card = createPyramidCard(cardData, count);
+            rowEl.appendChild(card);
+            count++;
+          }
         }
         pyramid.appendChild(rowEl);
       }
