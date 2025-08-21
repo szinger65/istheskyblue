@@ -247,7 +247,7 @@
       const radius = 300;
       const centerX = 200;
       const centerY = 200;
-      const angleStep = 360 / count;
+      const angleStep = 360 / count
 
       for (let i = 0; i < count; i++) {
           const angle = angleStep * i;
@@ -265,6 +265,11 @@
           const nameLabel = document.createElement('div');
           nameLabel.className = 'player-label';
           nameLabel.textContent = playerNames[i];
+          
+          // Put first player's name below the box, others above
+          if (i === 0) {
+            nameLabel.style.top = '105px'; // Below the 100px height box
+          }
           
           player.appendChild(nameLabel);
           player.addEventListener('click', () => dealToPlayer(player.id));
