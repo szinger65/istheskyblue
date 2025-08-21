@@ -65,7 +65,7 @@
       position: relative;
       width: 400px;
       height: 400px;
-      margin: 150px auto 0;
+      margin: 100px auto 0;
       border-radius: 50%;
       background: #228B22;
     }
@@ -91,8 +91,8 @@
       cursor: pointer;
       background-color: rgba(255, 255, 255, 0.1);
       border: 1px dashed white;
-      width: 130px;
-      height: 120px;
+      width: 120px;
+      height: 100px;
       justify-content: center;
       align-items: center;
       color: white;
@@ -177,7 +177,6 @@
   <div id="game-screen" class="screen">
     <h1>Pyramid Table</h1>
     <div id="table" class="table">
-      <div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div>
       <div id="pyramid" class="pyramid"></div>
     </div>
   </div>
@@ -243,11 +242,11 @@
       flipIndex = 0;
 
       const table = document.getElementById('table');
-      table.innerHTML = '<div id="deck" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);cursor:pointer;background:white;color:black;border-radius:6px;padding:10px;font-weight:bold;">🂠 Deck</div><div id="pyramid" class="pyramid"></div>';
+      table.innerHTML = '<div id="pyramid" class="pyramid"></div>';
 
       const radius = 300;
-      const centerX = 200;
-      const centerY = 210;
+      const centerX = 140;
+      const centerY = 180;
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
