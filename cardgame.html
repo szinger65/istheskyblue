@@ -177,6 +177,7 @@
 
   <div id="game-screen" class="screen">
     <h1>Pyramid Table</h1>
+    <button onclick="autoStart()" style="position:absolute;top:20px;right:20px;background-color:#f1c40f;color:black;border:none;border-radius:6px;padding:8px 12px;font-weight:bold;cursor:pointer;">Auto Deal & Start</button>
     <div id="table" class="table">
       <div id="pyramid" class="pyramid"></div>
     </div>
@@ -366,6 +367,21 @@
       });
 
       return cardContainer;
+    }
+
+    function autoStart() {
+      // Deal 4 cards to each player automatically
+      for (let round = 0; round < 4; round++) {
+        for (let playerId of players) {
+          if (deck.length > 0) {
+            dealToPlayer(playerId);
+          }
+        }
+      }
+      // Start the pyramid
+      if (deck.length > 0) {
+        buildPyramid();
+      }
     }
   </script>
 </body>
