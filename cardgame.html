@@ -86,17 +86,18 @@
     .player {
       position: absolute;
       display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
+      gap: 2px;
+      flex-wrap: nowrap;
       cursor: pointer;
       background-color: rgba(255, 255, 255, 0.1);
       border: 1px dashed white;
-      width: 130px;
-      height: 60px;
+      width: 128px;
+      height: 52px;
       justify-content: center;
       align-items: center;
       color: white;
       font-size: 0.8rem;
+      padding: 2px;
     }
 
     .card {
@@ -265,11 +266,6 @@
           const nameLabel = document.createElement('div');
           nameLabel.className = 'player-label';
           nameLabel.textContent = playerNames[i];
-          
-          // Put first player's name below the box, others above
-          if (i === 0) {
-            nameLabel.style.top = '105px'; // Below the 100px height box
-          }
           
           player.appendChild(nameLabel);
           player.addEventListener('click', () => dealToPlayer(player.id));
