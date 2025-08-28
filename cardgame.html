@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+window.onload = function() {
+      updatePlayerNames();
+    };<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -52,7 +54,28 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 10px;
+    }
+
+    .player-input-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+    }
+
+    .player-input-row input[type="text"] {
+      width: 200px;
+    }
+
+    .player-input-row input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     button {
@@ -86,23 +109,87 @@
     .player {
       position: absolute;
       display: flex;
+      flex-direction: column;
       gap: 2px;
-      flex-wrap: nowrap;
       cursor: pointer;
       background-color: rgba(255, 255, 255, 0.1);
       border: 1px dashed white;
-      width: 128px;
-      height: 52px;
+      width: 140px;
+      padding: 8px;
       justify-content: center;
       align-items: center;
       color: white;
       font-size: 0.8rem;
-      padding: 2px;
+      border-radius: 8px;
+    }
+
+    .player-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .player-name {
+      font-size: 0.85rem;
+      font-weight: bold;
+      white-space: nowrap;
+      margin-bottom: 3px;
+    }
+
+    .drink-counter {
+      background: rgba(220, 53, 69, 0.8);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .player-cards {
+      display: flex;
+      gap: 2px;
+      flex-wrap: nowrap;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+
+    .player-actions {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .action-btn {
+      padding: 3px 6px;
+      font-size: 0.65rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .drink-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .bluff-btn {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .target-btn {
+      background-color: #28a745;
+      color: white;
     }
 
     .card {
-      width: 30px;
-      height: 50px;
+      width: 25px;
+      height: 40px;
       perspective: 600px;
     }
 
@@ -123,13 +210,13 @@
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 6px;
+      border-radius: 4px;
       border: 1px solid #000;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 0.7rem;
     }
 
     .card-back {
@@ -143,15 +230,98 @@
       transform: rotateY(180deg);
     }
 
-    .player-label {
-      position: absolute;
-      top: -25px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.85rem;
+    .pyramid .card {
+      width: 30px;
+      height: 50px;
+    }
+
+    .pyramid .card-front, .pyramid .card-back {
+      font-size: 1.1rem;
+    }
+
+    #game-controls {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.9);
       color: white;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      max-width: 250px;
+    }
+
+    #current-turn {
+      background: rgba(52, 152, 219, 0.8);
+      padding: 5px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      text-align: center;
       font-weight: bold;
-      white-space: nowrap;
+    }
+
+    .phase-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .phase-actions button {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      margin: 2px;
+    }
+
+    #bluff-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #2c2c2c;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .modal-buttons button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .accept-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .challenge-btn {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .recall-phase {
+      background: rgba(156, 39, 176, 0.8);
     }
   </style>
 </head>
@@ -176,10 +346,35 @@
   </div>
 
   <div id="game-screen" class="screen">
-    <h1>Pyramid Table</h1>
-    <button onclick="autoStart()" style="position:absolute;top:20px;right:20px;background-color:#f1c40f;color:black;border:none;border-radius:6px;padding:8px 12px;font-weight:bold;cursor:pointer;">Auto Deal & Start</button>
+    <h1>Pyramid Drinking Game</h1>
+    
+    <div id="game-controls">
+      <div id="current-turn">Setting Up...</div>
+      <div id="phase-display">Phase: Setup</div>
+      <div id="timer-display" style="display:none;">Time: <span id="countdown">30</span>s</div>
+      <div id="current-card-display" style="display:none;">Current Card: <span id="current-card"></span></div>
+      <div class="phase-actions">
+        <button onclick="autoStart()" id="auto-start-btn">Auto Deal & Start</button>
+        <button onclick="startMemorizePhase()" id="memorize-btn" style="background-color:#e74c3c;color:white;display:none;">Start Memorizing (30s)</button>
+        <button onclick="nextPyramidCard()" id="pyramid-btn" style="background-color:#3498db;color:white;display:none;">Flip Next Card</button>
+        <button onclick="startRecallPhase()" id="recall-btn" style="background-color:#9c27b0;color:white;display:none;">Start Recall Phase</button>
+      </div>
+    </div>
+
     <div id="table" class="table">
       <div id="pyramid" class="pyramid"></div>
+    </div>
+  </div>
+
+  <!-- Bluff Modal -->
+  <div id="bluff-modal">
+    <div class="modal-content">
+      <h3 id="bluff-message">Player X wants you to drink!</h3>
+      <p>You can either drink or call their bluff.</p>
+      <div class="modal-buttons">
+        <button class="accept-btn" onclick="acceptDrink()">Take the Drink</button>
+        <button class="challenge-btn" onclick="callBluff()">Call Bluff!</button>
+      </div>
     </div>
   </div>
 
@@ -190,7 +385,17 @@
     let players = [];
     let flipIndex = 0;
     const playerHands = {};
+    const drinkCounts = {};
     let playerNames = [];
+    let gamePhase = 'setup';
+    let currentPyramidCard = null;
+    let memorizeTimer = null;
+    let timeLeft = 30;
+    let currentChallenger = null;
+    let currentTarget = null;
+    let currentRecallPlayer = 0;
+    let recallCardIndex = 0;
+    let myPlayerId = null; // Track which player is the current user
 
     function updatePlayerNames() {
       const count = parseInt(document.getElementById('player-count').value);
@@ -198,19 +403,65 @@
       nameInputs.innerHTML = '';
       
       for (let i = 0; i < count; i++) {
+        const container = document.createElement('div');
+        container.className = 'player-input-row';
+        
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = `Player ${i + 1}`;
         input.value = `Player ${i + 1}`;
         input.id = `player-name-${i}`;
-        nameInputs.appendChild(input);
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'radio';
+        checkbox.name = 'selected-player';
+        checkbox.value = i;
+        checkbox.id = `player-checkbox-${i}`;
+        
+        const label = document.createElement('label');
+        label.textContent = 'Me';
+        label.htmlFor = `player-checkbox-${i}`;
+        
+        container.appendChild(input);
+        container.appendChild(checkbox);
+        container.appendChild(label);
+        nameInputs.appendChild(container);
       }
     }
 
-    // Initialize with default 3 players
-    window.onload = function() {
-      updatePlayerNames();
-    };
+    function goToPlayerSelection() {
+      const count = parseInt(document.getElementById('player-count').value);
+      
+      // Get custom player names
+      playerNames = [];
+      for (let i = 0; i < count; i++) {
+        const nameInput = document.getElementById(`player-name-${i}`);
+        playerNames.push(nameInput.value.trim() || `Player ${i + 1}`);
+      }
+      
+      // Create player selection buttons
+      const selectionDiv = document.getElementById('player-selection-buttons');
+      selectionDiv.innerHTML = '';
+      
+      playerNames.forEach((name, index) => {
+        const button = document.createElement('button');
+        button.textContent = name;
+        button.style.margin = '10px';
+        button.style.padding = '15px 25px';
+        button.style.fontSize = '1.2rem';
+        button.onclick = () => selectPlayer(index);
+        selectionDiv.appendChild(button);
+      });
+      
+      document.getElementById('start-screen').classList.remove('active');
+      document.getElementById('player-selection-screen').classList.add('active');
+    }
+
+    function selectPlayer(playerIndex) {
+      myPlayerId = `player-${playerIndex}`;
+      startGame();
+    }
+
     function createDeck() {
       const newDeck = [];
       for (let suit of suits) {
@@ -232,7 +483,6 @@
     function startGame() {
       const count = parseInt(document.getElementById('player-count').value);
       
-      // Get custom player names
       playerNames = [];
       for (let i = 0; i < count; i++) {
         const nameInput = document.getElementById(`player-name-${i}`);
@@ -252,43 +502,70 @@
       const angleStep = 360 / count;
 
       for (let i = 0; i < count; i++) {
-          const angle = angleStep * i;
-          const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
-          const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
+        const angle = angleStep * i;
+        const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
+        const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
+      
+        const player = document.createElement('div');
+        player.className = 'player';
+        player.id = `player-${i}`;
+        player.style.left = `${x}px`;
+        player.style.top = `${y}px`;
+        player.style.transform = 'translate(-50%, -50%)';
         
-          const player = document.createElement('div');
-          player.className = 'player';
-          player.id = `player-${i}`;
-          player.style.left = `${x}px`;
-          player.style.top = `${y}px`;
-          player.style.transform = 'translate(-50%, -50%)';
-          playerHands[player.id] = [];
-          
-          const nameLabel = document.createElement('div');
-          nameLabel.className = 'player-label';
-          nameLabel.textContent = playerNames[i];
-          
-          player.appendChild(nameLabel);
-          player.addEventListener('click', () => dealToPlayer(player.id));
-          
-          table.appendChild(player);
-          players.push(player.id);
-        }
+        playerHands[player.id] = [];
+        drinkCounts[player.id] = 0;
+        
+        // Create player structure
+        const playerHeader = document.createElement('div');
+        playerHeader.className = 'player-header';
+        
+        const nameLabel = document.createElement('div');
+        nameLabel.className = 'player-name';
+        nameLabel.textContent = playerNames[i];
+        
+        const drinkCounter = document.createElement('div');
+        drinkCounter.className = 'drink-counter';
+        drinkCounter.id = `drinks-${player.id}`;
+        drinkCounter.textContent = `Drinks: 0`;
+        
+        playerHeader.appendChild(nameLabel);
+        playerHeader.appendChild(drinkCounter);
+        
+        const playerCards = document.createElement('div');
+        playerCards.className = 'player-cards';
+        playerCards.id = `cards-${player.id}`;
+        
+        const playerActions = document.createElement('div');
+        playerActions.className = 'player-actions';
+        playerActions.id = `actions-${player.id}`;
+        playerActions.style.display = 'none';
+        
+        player.appendChild(playerHeader);
+        player.appendChild(playerCards);
+        player.appendChild(playerActions);
+        
+        player.addEventListener('click', () => dealToPlayer(player.id));
+        
+        table.appendChild(player);
+        players.push(player.id);
+      }
 
       document.getElementById('start-screen').classList.remove('active');
       document.getElementById('game-screen').classList.add('active');
+      updateGameStatus('setup');
     }
 
     function dealToPlayer(playerId) {
       if (playerHands[playerId].length >= 4 || deck.length === 0) return;
       const card = deck.pop();
       playerHands[playerId].push(card);
-      const player = document.getElementById(playerId);
-      const cardEl = createPlayerCard(card);
-      player.appendChild(cardEl);
+      const playerCards = document.getElementById(`cards-${playerId}`);
+      const cardEl = createPlayerCard(card, playerId);
+      playerCards.appendChild(cardEl);
     }
 
-    function createPlayerCard(card) {
+    function createPlayerCard(card, playerId) {
       const cardContainer = document.createElement('div');
       cardContainer.className = 'card';
 
@@ -308,11 +585,123 @@
       inner.appendChild(back);
       cardContainer.appendChild(inner);
 
-      cardContainer.addEventListener('click', () => {
-        cardContainer.classList.toggle('flipped');
-      });
+      // Only allow the current user to flip their own cards
+      if (playerId === myPlayerId) {
+        cardContainer.addEventListener('click', () => {
+          if (gamePhase === 'memorize' || gamePhase === 'recall') {
+            cardContainer.classList.toggle('flipped');
+          }
+        });
+      }
 
       return cardContainer;
+    }
+
+    function updateDrinkCount(playerId, drinks) {
+      drinkCounts[playerId] += drinks;
+      document.getElementById(`drinks-${playerId}`).textContent = `Drinks: ${drinkCounts[playerId]}`;
+    }
+
+    function createPlayerActions(playerId) {
+      const actionsDiv = document.getElementById(`actions-${playerId}`);
+      actionsDiv.innerHTML = '';
+      
+      const makePlayerDrinkBtn = document.createElement('button');
+      makePlayerDrinkBtn.className = 'action-btn target-btn';
+      makePlayerDrinkBtn.textContent = 'Make Someone Drink';
+      makePlayerDrinkBtn.onclick = () => makeSomeoneDrink(playerId);
+      
+      actionsDiv.appendChild(makePlayerDrinkBtn);
+    }
+
+    function makeSomeoneDrink(playerId) {
+      const playerIndex = players.indexOf(playerId);
+      const playerName = playerNames[playerIndex];
+      
+      if (currentPyramidCard) {
+        // Show targeting options (player can have the card or bluff)
+        showTargetOptions(playerId, playerName);
+      } else {
+        alert("Wait for a pyramid card to be flipped first!");
+      }
+    }
+
+    function showTargetOptions(challengerId, challengerName) {
+      const targets = players.filter(p => p !== challengerId);
+      let message = `${challengerName}, choose who to make drink:\n\n`;
+      
+      targets.forEach((targetId, index) => {
+        const targetIndex = players.indexOf(targetId);
+        message += `${index + 1}. ${playerNames[targetIndex]}\n`;
+      });
+      
+      const choice = prompt(message + "\nEnter number of target (or cancel to abort):");
+      if (choice && choice >= 1 && choice <= targets.length) {
+        const targetId = targets[choice - 1];
+        initiateChallenge(challengerId, targetId);
+      }
+    }
+
+    function initiateChallenge(challengerId, targetId) {
+      currentChallenger = challengerId;
+      currentTarget = targetId;
+      
+      const challengerIndex = players.indexOf(challengerId);
+      const targetIndex = players.indexOf(targetId);
+      const challengerName = playerNames[challengerIndex];
+      const targetName = playerNames[targetIndex];
+      
+      document.getElementById('bluff-message').textContent = 
+        `${challengerName} wants ${targetName} to drink!`;
+      document.getElementById('bluff-modal').style.display = 'flex';
+    }
+
+    function acceptDrink() {
+      updateDrinkCount(currentTarget, 1);
+      document.getElementById('bluff-modal').style.display = 'none';
+      
+      const targetIndex = players.indexOf(currentTarget);
+      alert(`${playerNames[targetIndex]} takes a drink!`);
+      
+      currentChallenger = null;
+      currentTarget = null;
+    }
+
+    function callBluff() {
+      document.getElementById('bluff-modal').style.display = 'none';
+      
+      const challengerIndex = players.indexOf(currentChallenger);
+      const targetIndex = players.indexOf(currentTarget);
+      const challengerName = playerNames[challengerIndex];
+      const targetName = playerNames[targetIndex];
+      
+      // Check if challenger actually has the card
+      const cardValue = currentPyramidCard.replace(/[♠♥♦♣]/g, '');
+      const challengerCards = playerHands[currentChallenger];
+      const matchingCards = challengerCards.filter(card => card.value === cardValue);
+      
+      if (matchingCards.length > 0) {
+        // Challenger was telling the truth
+        alert(`${challengerName} proves they have ${cardValue}! ${targetName} drinks twice!`);
+        updateDrinkCount(currentTarget, 2);
+        
+        // Flip one of their matching cards
+        const playerCards = document.getElementById(`cards-${currentChallenger}`);
+        const cardElements = playerCards.querySelectorAll('.card');
+        for (let i = 0; i < challengerCards.length; i++) {
+          if (challengerCards[i].value === cardValue && !cardElements[i].classList.contains('flipped')) {
+            cardElements[i].classList.add('flipped');
+            break;
+          }
+        }
+      } else {
+        // Challenger was bluffing
+        alert(`${challengerName} was bluffing! They drink instead!`);
+        updateDrinkCount(currentChallenger, 1);
+      }
+      
+      currentChallenger = null;
+      currentTarget = null;
     }
 
     function buildPyramid() {
@@ -320,7 +709,6 @@
       pyramid.innerHTML = '';
       let count = 0;
 
-      // Always build 6 rows if less than 8 players
       const rows = players.length < 8 ? 6 : Math.max(1, 8 - players.length);
       
       for (let row = 1; row <= rows; row++) {
@@ -359,14 +747,6 @@
       inner.appendChild(back);
       cardContainer.appendChild(inner);
 
-      cardContainer.addEventListener('click', () => {
-        const thisIndex = parseInt(cardContainer.dataset.index);
-        if (thisIndex === flipIndex) {
-          cardContainer.classList.add('flipped');
-          flipIndex++;
-        }
-      });
-
       return cardContainer;
     }
 
@@ -379,10 +759,132 @@
           }
         }
       }
-      // Start the pyramid
+      
       if (deck.length > 0) {
         buildPyramid();
       }
+      
+      document.getElementById('auto-start-btn').style.display = 'none';
+      document.getElementById('memorize-btn').style.display = 'block';
+      updateGameStatus('setup');
+    }
+
+    function updateGameStatus(phase) {
+      gamePhase = phase;
+      const phaseDisplay = document.getElementById('phase-display');
+      const timerDisplay = document.getElementById('timer-display');
+      const cardDisplay = document.getElementById('current-card-display');
+      const currentTurn = document.getElementById('current-turn');
+      
+      switch(phase) {
+        case 'setup':
+          phaseDisplay.textContent = 'Phase: Cards dealt - Ready to memorize';
+          timerDisplay.style.display = 'none';
+          cardDisplay.style.display = 'none';
+          currentTurn.textContent = 'Ready to Start!';
+          break;
+        case 'memorize':
+          phaseDisplay.textContent = 'Phase: MEMORIZE YOUR CARDS!';
+          timerDisplay.style.display = 'block';
+          cardDisplay.style.display = 'none';
+          currentTurn.textContent = 'Everyone Memorize!';
+          break;
+        case 'pyramid':
+          phaseDisplay.textContent = 'Phase: Pyramid Game';
+          timerDisplay.style.display = 'none';
+          cardDisplay.style.display = 'block';
+          currentTurn.textContent = 'Playing the Pyramid';
+          showPlayerActions(true);
+          break;
+        case 'recall':
+          phaseDisplay.textContent = 'Phase: Recall Your Cards';
+          timerDisplay.style.display = 'none';
+          cardDisplay.style.display = 'none';
+          currentTurn.textContent = `${playerNames[currentRecallPlayer]}'s Turn to Recall`;
+          currentTurn.className = 'recall-phase';
+          showPlayerActions(false);
+          break;
+      }
+    }
+
+    function showPlayerActions(show) {
+      players.forEach(playerId => {
+        const actions = document.getElementById(`actions-${playerId}`);
+        // Only show actions for the current user
+        if (show && gamePhase === 'pyramid' && playerId === myPlayerId) {
+          createPlayerActions(playerId);
+          actions.style.display = 'flex';
+        } else {
+          actions.style.display = 'none';
+        }
+      });
+    }
+
+    function startMemorizePhase() {
+      gamePhase = 'memorize';
+      timeLeft = 30;
+      updateGameStatus('memorize');
+      
+      // Only flip the current user's cards face up
+      const myPlayerCards = document.querySelectorAll(`#${myPlayerId} .card`);
+      myPlayerCards.forEach(card => {
+        card.classList.add('flipped');
+      });
+      
+      document.getElementById('memorize-btn').style.display = 'none';
+      
+      memorizeTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('countdown').textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(memorizeTimer);
+          endMemorizePhase();
+        }
+      }, 1000);
+    }
+
+    function endMemorizePhase() {
+      // Flip only the current user's cards back to face down
+      const myPlayerCards = document.querySelectorAll(`#${myPlayerId} .card`);
+      myPlayerCards.forEach(card => {
+        card.classList.remove('flipped');
+      });
+      
+      gamePhase = 'pyramid';
+      flipIndex = 0;
+      updateGameStatus('pyramid');
+      document.getElementById('pyramid-btn').style.display = 'block';
+    }
+
+    function nextPyramidCard() {
+      const pyramidCards = document.querySelectorAll('.pyramid .card');
+      
+      if (flipIndex < pyramidCards.length) {
+        const card = pyramidCards[flipIndex];
+        card.classList.add('flipped');
+        
+        const cardFront = card.querySelector('.card-front');
+        currentPyramidCard = cardFront.textContent;
+        document.getElementById('current-card').textContent = currentPyramidCard;
+        
+        flipIndex++;
+        
+        if (flipIndex >= pyramidCards.length) {
+          document.getElementById('pyramid-btn').style.display = 'none';
+          document.getElementById('recall-btn').style.display = 'block';
+        }
+      }
+    }
+
+    function startRecallPhase() {
+      gamePhase = 'recall';
+      currentRecallPlayer = 0;
+      recallCardIndex = 0;
+      updateGameStatus('recall');
+      document.getElementById('recall-btn').style.display = 'none';
+      
+      alert(`Now each player must recall their cards in order!\n${playerNames[0]} goes first.`);
     }
   </script>
 </body>
