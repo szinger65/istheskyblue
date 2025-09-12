@@ -907,7 +907,7 @@
       updateGameStatus('recall');
       document.getElementById('recall-btn').style.display = 'none';
       
-      alert(`Now each player must recall their cards in order!\n${playerNames[0]} goes first.`);
+      showGameMessage(`Now each player must recall their cards in order! ${playerNames[0]} goes first.`, 4000);
     }
 
     updatePlayerNames();
