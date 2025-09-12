@@ -275,7 +275,7 @@
       margin: 2px;
     }
 
-    #bluff-modal {
+    .modal {
       display: none;
       position: fixed;
       top: 0;
@@ -295,6 +295,7 @@
       border-radius: 10px;
       text-align: center;
       max-width: 400px;
+      width: 90%;
     }
 
     .modal-buttons {
@@ -302,6 +303,7 @@
       gap: 10px;
       justify-content: center;
       margin-top: 15px;
+      flex-wrap: wrap;
     }
 
     .modal-buttons button {
@@ -321,6 +323,18 @@
     .challenge-btn {
       background-color: #ffc107;
       color: black;
+    }
+
+    .target-player-btn {
+      background-color: #28a745;
+      color: white;
+      margin: 5px;
+      min-width: 120px;
+    }
+
+    .cancel-btn {
+      background-color: #6c757d;
+      color: white;
     }
 
     .recall-phase {
@@ -369,8 +383,16 @@
     </div>
   </div>
 
+  <!-- Target Selection Modal -->
+  <div id="target-modal" class="modal">
+    <div class="modal-content">
+      <h3 id="target-message">Choose who to make drink:</h3>
+      <div id="target-buttons" class="modal-buttons"></div>
+    </div>
+  </div>
+
   <!-- Bluff Modal -->
-  <div id="bluff-modal">
+  <div id="bluff-modal" class="modal">
     <div class="modal-content">
       <h3 id="bluff-message">Player X wants you to drink!</h3>
       <p>You can either drink or call their bluff.</p>
@@ -398,7 +420,7 @@
     let currentTarget = null;
     let currentRecallPlayer = 0;
     let recallCardIndex = 0;
-    let myPlayerId = null; // Track which player is the current user
+    let myPlayerId = null;
 
     function updatePlayerNames() {
       const count = parseInt(document.getElementById('player-count').value);
@@ -459,12 +481,10 @@
         playerNames.push(nameInput.value.trim() || `Player ${i + 1}`);
       }
       
-      // Check which player is selected as "me"
       const selectedRadio = document.querySelector('input[name="selected-player"]:checked');
       if (selectedRadio) {
         myPlayerId = `player-${selectedRadio.value}`;
       } else {
-        // Default to player 0 if none selected
         myPlayerId = `player-0`;
       }
       
@@ -492,7 +512,6 @@
         player.style.top = `${y}px`;
         player.style.transform = 'translate(-50%, -50%)';
         
-        // Highlight the current user's player
         if (player.id === myPlayerId) {
           player.classList.add('current-user');
         }
@@ -500,7 +519,6 @@
         playerHands[player.id] = [];
         drinkCounts[player.id] = 0;
         
-        // Create player structure
         const playerHeader = document.createElement('div');
         playerHeader.className = 'player-header';
         
@@ -569,14 +587,11 @@
       inner.appendChild(back);
       cardContainer.appendChild(inner);
 
-      // Allow card flipping during appropriate phases
       cardContainer.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent triggering parent click events
+        e.stopPropagation();
         if (gamePhase === 'memorize' || gamePhase === 'recall') {
-          // During memorize phase, only current user can flip their cards
-          // During recall phase, allow any player to flip their cards (for demonstration)
           if (gamePhase === 'memorize' && playerId !== myPlayerId) {
-            return; // Don't allow flipping other players' cards during memorize
+            return;
           }
           cardContainer.classList.toggle('flipped');
         }
@@ -607,27 +622,51 @@
       const playerName = playerNames[playerIndex];
       
       if (currentPyramidCard) {
-        // Show targeting options (player can have the card or bluff)
-        showTargetOptions(playerId, playerName);
+        showTargetModal(playerId, playerName);
       } else {
         alert("Wait for a pyramid card to be flipped first!");
       }
     }
 
-    function showTargetOptions(challengerId, challengerName) {
+    function showTargetModal(challengerId, challengerName) {
       const targets = players.filter(p => p !== challengerId);
-      let message = `${challengerName}, choose who to make drink:\n\n`;
+      const modal = document.getElementById('target-modal');
+      const messageEl = document.getElementById('target-message');
+      const buttonsContainer = document.getElementById('target-buttons');
       
-      targets.forEach((targetId, index) => {
+      messageEl.textContent = `${challengerName}, choose who to make drink:`;
+      buttonsContainer.innerHTML = '';
+      
+      // Add target buttons
+      targets.forEach(targetId => {
         const targetIndex = players.indexOf(targetId);
-        message += `${index + 1}. ${playerNames[targetIndex]}\n`;
+        const targetName = playerNames[targetIndex];
+        
+        const button = document.createElement('button');
+        button.className = 'target-player-btn';
+        button.textContent = targetName;
+        button.onclick = () => {
+          selectTarget(challengerId, targetId);
+        };
+        
+        buttonsContainer.appendChild(button);
       });
       
-      const choice = prompt(message + "\nEnter number of target (or cancel to abort):");
-      if (choice && choice >= 1 && choice <= targets.length) {
-        const targetId = targets[choice - 1];
-        initiateChallenge(challengerId, targetId);
-      }
+      // Add cancel button
+      const cancelButton = document.createElement('button');
+      cancelButton.className = 'cancel-btn';
+      cancelButton.textContent = 'Cancel';
+      cancelButton.onclick = () => {
+        modal.style.display = 'none';
+      };
+      
+      buttonsContainer.appendChild(cancelButton);
+      modal.style.display = 'flex';
+    }
+
+    function selectTarget(challengerId, targetId) {
+      document.getElementById('target-modal').style.display = 'none';
+      initiateChallenge(challengerId, targetId);
     }
 
     function initiateChallenge(challengerId, targetId) {
@@ -651,7 +690,6 @@
       const targetIndex = players.indexOf(currentTarget);
       alert(`${playerNames[targetIndex]} takes a drink!`);
       
-      // Reset to normal player actions
       showPlayerActions(true);
       
       currentChallenger = null;
@@ -666,17 +704,14 @@
       const challengerName = playerNames[challengerIndex];
       const targetName = playerNames[targetIndex];
       
-      // Check if challenger actually has the card
       const cardValue = currentPyramidCard.replace(/[♠♥♦♣]/g, '');
       const challengerCards = playerHands[currentChallenger];
       const matchingCards = challengerCards.filter(card => card.value === cardValue);
       
       if (matchingCards.length > 0) {
-        // Challenger was telling the truth
         alert(`${challengerName} proves they have ${cardValue}! ${targetName} drinks twice!`);
         updateDrinkCount(currentTarget, 2);
         
-        // Flip one of their matching cards
         const playerCards = document.getElementById(`cards-${currentChallenger}`);
         const cardElements = playerCards.querySelectorAll('.card');
         for (let i = 0; i < challengerCards.length; i++) {
@@ -686,12 +721,10 @@
           }
         }
       } else {
-        // Challenger was bluffing
         alert(`${challengerName} was bluffing! They drink instead!`);
         updateDrinkCount(currentChallenger, 1);
       }
       
-      // Reset to normal player actions
       showPlayerActions(true);
       
       currentChallenger = null;
@@ -745,7 +778,6 @@
     }
 
     function autoStart() {
-      // Deal 4 cards to each player automatically
       for (let round = 0; round < 4; round++) {
         for (let playerId of players) {
           if (deck.length > 0) {
@@ -804,7 +836,6 @@
     function showPlayerActions(show) {
       players.forEach(playerId => {
         const actions = document.getElementById(`actions-${playerId}`);
-        // Only show actions for the current user
         if (show && gamePhase === 'pyramid' && playerId === myPlayerId) {
           createPlayerActions(playerId);
           actions.style.display = 'flex';
@@ -819,7 +850,6 @@
       timeLeft = 30;
       updateGameStatus('memorize');
       
-      // Only flip the current user's cards face up
       const myPlayerCards = document.querySelectorAll(`#${myPlayerId} .card`);
       myPlayerCards.forEach(card => {
         card.classList.add('flipped');
@@ -839,7 +869,6 @@
     }
 
     function endMemorizePhase() {
-      // Flip only the current user's cards back to face down
       const myPlayerCards = document.querySelectorAll(`#${myPlayerId} .card`);
       myPlayerCards.forEach(card => {
         card.classList.remove('flipped');
@@ -881,7 +910,6 @@
       alert(`Now each player must recall their cards in order!\n${playerNames[0]} goes first.`);
     }
 
-    // Initialize the player names on page load
     updatePlayerNames();
   </script>
 </body>
