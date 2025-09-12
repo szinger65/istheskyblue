@@ -121,6 +121,11 @@
       border-radius: 8px;
     }
 
+    .player.current-user {
+      background-color: rgba(52, 152, 219, 0.3);
+      border: 2px solid #3498db;
+    }
+
     .player-header {
       display: flex;
       flex-direction: column;
@@ -427,39 +432,6 @@
       }
     }
 
-    function goToPlayerSelection() {
-      const count = parseInt(document.getElementById('player-count').value);
-      
-      // Get custom player names
-      playerNames = [];
-      for (let i = 0; i < count; i++) {
-        const nameInput = document.getElementById(`player-name-${i}`);
-        playerNames.push(nameInput.value.trim() || `Player ${i + 1}`);
-      }
-      
-      // Create player selection buttons
-      const selectionDiv = document.getElementById('player-selection-buttons');
-      selectionDiv.innerHTML = '';
-      
-      playerNames.forEach((name, index) => {
-        const button = document.createElement('button');
-        button.textContent = name;
-        button.style.margin = '10px';
-        button.style.padding = '15px 25px';
-        button.style.fontSize = '1.2rem';
-        button.onclick = () => selectPlayer(index);
-        selectionDiv.appendChild(button);
-      });
-      
-      document.getElementById('start-screen').classList.remove('active');
-      document.getElementById('player-selection-screen').classList.add('active');
-    }
-
-    function selectPlayer(playerIndex) {
-      myPlayerId = `player-${playerIndex}`;
-      startGame();
-    }
-
     function createDeck() {
       const newDeck = [];
       for (let suit of suits) {
@@ -487,6 +459,15 @@
         playerNames.push(nameInput.value.trim() || `Player ${i + 1}`);
       }
       
+      // Check which player is selected as "me"
+      const selectedRadio = document.querySelector('input[name="selected-player"]:checked');
+      if (selectedRadio) {
+        myPlayerId = `player-${selectedRadio.value}`;
+      } else {
+        // Default to player 0 if none selected
+        myPlayerId = `player-0`;
+      }
+      
       players = [];
       deck = shuffle(createDeck());
       flipIndex = 0;
@@ -510,6 +491,11 @@
         player.style.left = `${x}px`;
         player.style.top = `${y}px`;
         player.style.transform = 'translate(-50%, -50%)';
+        
+        // Highlight the current user's player
+        if (player.id === myPlayerId) {
+          player.classList.add('current-user');
+        }
         
         playerHands[player.id] = [];
         drinkCounts[player.id] = 0;
@@ -583,14 +569,18 @@
       inner.appendChild(back);
       cardContainer.appendChild(inner);
 
-      // Only allow the current user to flip their own cards
-      if (playerId === myPlayerId) {
-        cardContainer.addEventListener('click', () => {
-          if (gamePhase === 'memorize' || gamePhase === 'recall') {
-            cardContainer.classList.toggle('flipped');
+      // Allow card flipping during appropriate phases
+      cardContainer.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering parent click events
+        if (gamePhase === 'memorize' || gamePhase === 'recall') {
+          // During memorize phase, only current user can flip their cards
+          // During recall phase, allow any player to flip their cards (for demonstration)
+          if (gamePhase === 'memorize' && playerId !== myPlayerId) {
+            return; // Don't allow flipping other players' cards during memorize
           }
-        });
-      }
+          cardContainer.classList.toggle('flipped');
+        }
+      });
 
       return cardContainer;
     }
@@ -661,6 +651,9 @@
       const targetIndex = players.indexOf(currentTarget);
       alert(`${playerNames[targetIndex]} takes a drink!`);
       
+      // Reset to normal player actions
+      showPlayerActions(true);
+      
       currentChallenger = null;
       currentTarget = null;
     }
@@ -697,6 +690,9 @@
         alert(`${challengerName} was bluffing! They drink instead!`);
         updateDrinkCount(currentChallenger, 1);
       }
+      
+      // Reset to normal player actions
+      showPlayerActions(true);
       
       currentChallenger = null;
       currentTarget = null;
@@ -884,6 +880,9 @@
       
       alert(`Now each player must recall their cards in order!\n${playerNames[0]} goes first.`);
     }
+
+    // Initialize the player names on page load
+    updatePlayerNames();
   </script>
 </body>
 </html>
